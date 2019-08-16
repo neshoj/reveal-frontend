@@ -4,6 +4,7 @@ import SeamlessImmutable from 'seamless-immutable';
 import uuidv4 from 'uuid/v4';
 import { PlanAction, planActivities, PlanGoal } from '../../configs/settings';
 import { FlexObject, transformValues } from '../../helpers/utils';
+import { Jurisdiction } from './jurisdictions';
 
 /** the reducer name */
 export const reducerName = 'plans';
@@ -275,6 +276,68 @@ export const extractPlanRecordFromPlanPayload = (planPayload: PlanPayload): Plan
     if (planInterventionType.length) {
       const planRecord: PlanRecord = {
         id: identifier,
+        plan_date: date,
+        plan_effective_period_end: end,
+        plan_effective_period_start: start,
+        plan_fi_reason: planFiReason,
+        plan_fi_status: planFiStatus,
+        plan_id: identifier,
+        plan_intervention_type: planInterventionType as InterventionType,
+        plan_status: status as PlanStatus,
+        plan_title: title,
+        plan_version: version,
+      };
+      return planRecord;
+    }
+  }
+  return null;
+};
+
+/** extractPlanRecordFromPlanPayload - translates PlanPayload to PlanRecord */
+export const extractPlanFromPlanPayload = (
+  planPayload: PlanPayload,
+  jurisdiction: Jurisdiction
+): Plan | null => {
+  const {
+    date,
+    effectivePeriod,
+    identifier,
+    status,
+    title,
+    useContext,
+    version,
+  } = planPayload as PlanPayload;
+
+  if (useContext && effectivePeriod) {
+    const { end, start } = effectivePeriod;
+    let planInterventionType = '';
+    let planFiReason = '';
+    let planFiStatus = '';
+    for (const context of useContext) {
+      switch (context.code) {
+        case 'interventionType': {
+          planInterventionType = context.valueCodableConcept;
+          break;
+        }
+        case 'fiReason': {
+          planFiReason = context.valueCodableConcept;
+          break;
+        }
+        case 'fiStatus': {
+          planFiStatus = context.valueCodableConcept;
+          break;
+        }
+      }
+    }
+    if (planInterventionType.length) {
+      const planRecord: Plan = {
+        id: identifier,
+        jurisdiction_depth: 0,
+        jurisdiction_id: jurisdiction.jurisdiction_id,
+        jurisdiction_name: jurisdiction.name || '',
+        jurisdiction_name_path: [],
+        jurisdiction_parent_id: jurisdiction.parent_id || 'null',
+        jurisdiction_path: [],
         plan_date: date,
         plan_effective_period_end: end,
         plan_effective_period_start: start,

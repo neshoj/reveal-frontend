@@ -1,12 +1,13 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { withRouter } from 'react-router-dom';
 import { Col, Row } from 'reactstrap';
 import HeaderBreadcrumb from '../../../../components/page/HeaderBreadcrumb/HeaderBreadcrumb';
 import { HOME, HOME_URL, NEW_PLAN_URL, PLAN_LIST_URL, PLANS } from '../../../../constants';
 import PlanForm from '../../../forms/PlanForm';
 
 /** Simple component that loads the new plan form and allows you to create a new plan */
-const NewPlan = () => {
+const NewPlan = (props: any) => {
   const pageTitle: string = 'Create New Plan';
 
   const breadcrumbProps = {
@@ -35,11 +36,11 @@ const NewPlan = () => {
       <h3 className="mb-3 page-title">{pageTitle}</h3>
       <Row>
         <Col md={8}>
-          <PlanForm />
+          <PlanForm history={props.history} />
         </Col>
       </Row>
     </div>
   );
 };
 
-export default NewPlan;
+export default withRouter(NewPlan);

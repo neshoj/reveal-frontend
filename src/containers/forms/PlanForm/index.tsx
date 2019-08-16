@@ -1,3 +1,4 @@
+import superset from '@onaio/superset-connector';
 import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import moment from 'moment';
 import React, { FormEvent, useState } from 'react';
@@ -8,6 +9,7 @@ import {
   DATE_FORMAT,
   DEFAULT_PLAN_DURATION_DAYS,
   DEFAULT_PLAN_VERSION,
+  SUPERSET_JURISDICTIONS_DATA_SLICE,
 } from '../../../configs/env';
 import {
   actionReasons,
@@ -15,10 +17,19 @@ import {
   FIReasons,
   goalPriorities,
 } from '../../../configs/settings';
-import { PLAN_LIST_URL, SAVING } from '../../../constants';
+import { FI_SINGLE_MAP_URL, OPENSRP_LOCATION, PLAN_LIST_URL, SAVING } from '../../../constants';
 import { OpenSRPService } from '../../../services/opensrp';
+import supersetFetch from '../../../services/superset';
+import { Jurisdiction } from '../../../store/ducks/jurisdictions';
 import { addPlanDefinition } from '../../../store/ducks/opensrp/PlanDefinition';
-import { InterventionType, PlanStatus } from '../../../store/ducks/plans';
+import {
+  extractPlanFromPlanPayload,
+  fetchPlans,
+  InterventionType,
+  Plan,
+  PlanPayload,
+  PlanStatus,
+} from '../../../store/ducks/plans';
 import JurisdictionSelect from '../JurisdictionSelect';
 import {
   doesFieldHaveErrors,
@@ -64,6 +75,8 @@ interface PlanFormProps {
   disabledActivityFields: string[];
   disabledFields: string[];
   fetchPlan: typeof addPlanDefinition;
+  fetchPlans: typeof fetchPlans;
+  history: { push: any };
   initialValues: PlanFormFields;
   redirectAfterAction: string;
 }
@@ -115,10 +128,40 @@ const PlanForm = (props: PlanFormProps) => {
           } else {
             apiService
               .create(payload)
-              .then(() => {
-                props.fetchPlan(payload);
+              .then(async () => {
                 setSubmitting(false);
                 setAreWeDoneHere(true);
+                if (payload.status === PlanStatus.ACTIVE && payload.jurisdiction.length) {
+                  props.fetchPlan(payload);
+                  // const jurisdictionApiService = new OpenSRPService(OPENSRP_LOCATION)
+
+                  const jurisdictionFetchOptions = superset.getFormData(1, [
+                    { comparator: payload.jurisdiction[0].code, operator: '==', subject: 'id' },
+                  ]);
+                  const jurisdiction: Jurisdiction | null = await supersetFetch(
+                    SUPERSET_JURISDICTIONS_DATA_SLICE,
+                    jurisdictionFetchOptions
+                  ).then(res => {
+                    if (res[0]) {
+                      const J: Jurisdiction = {
+                        geographic_level: res[0].geographic_level,
+                        jurisdiction_id: res[0].id,
+                        name: res[0].name,
+                        parent_id: res[0].parent_id,
+                      };
+                      return J;
+                    }
+                    return null;
+                  });
+
+                  const plan: Plan | null =
+                    jurisdiction &&
+                    extractPlanFromPlanPayload(payload as PlanPayload, jurisdiction);
+                  if (plan) {
+                    props.fetchPlans([plan]);
+                    props.history.push(`${FI_SINGLE_MAP_URL}/${payload.identifier}/`);
+                  }
+                }
               })
               .catch((e: Error) => {
                 setGlobalError(e.message);
@@ -697,6 +740,12 @@ const defaultProps: PlanFormProps = {
   disabledActivityFields: [],
   disabledFields: [],
   fetchPlan: addPlanDefinition,
+  fetchPlans,
+  history: {
+    push: () => {
+      /* do something */
+    },
+  },
   initialValues: defaultInitialValues,
   redirectAfterAction: PLAN_LIST_URL,
 };
