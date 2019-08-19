@@ -164,7 +164,7 @@ interface IrsPlanState {
   previousPlanName: string;
   tableCrumbs: TableCrumb[];
 }
-
+(window as any).perf = {};
 /** IrsPlan - component for IRS Plan page */
 class IrsPlan extends React.Component<
   RouteComponentProps<RouteParams> & IrsPlanProps,
@@ -325,6 +325,8 @@ class IrsPlan extends React.Component<
               properties_filter: `name:${jurisdictionsById[parentlessParent].name}`,
               return_geometry: false,
             }).then(results => {
+              (window as any).perf.t0 = window.performance.now();
+              console.log('t0: OPENSRP_FIND_BY_PROPERTIES level 0 geo loaded');
               const result = results[0];
               if (result && result.properties) {
                 const country: JurisdictionsByCountry =
@@ -375,6 +377,11 @@ class IrsPlan extends React.Component<
                     },
                     () => {
                       if (isDraftPlan) {
+                        (window as any).perf.t1 = window.performance.now();
+                        console.log(
+                          't1: about to call this.loadJurisdictionGeometries',
+                          ((window as any).perf.t1 - (window as any).perf.t0) / 1000
+                        );
                         this.loadJurisdictionGeometries();
                       }
                     }
@@ -414,7 +421,17 @@ class IrsPlan extends React.Component<
             isLoadingGeoms: false,
           },
           () => {
+            (window as any).perf.t3a = window.performance.now();
+            console.log(
+              't3a: jurisdictions loaded into store, about to build gisidawrapper props',
+              ((window as any).perf.t3a - (window as any).perf.t2d) / 1000
+            );
             const gisidaWrapperProps = this.getGisidaWrapperProps();
+            (window as any).perf.t3b = window.performance.now();
+            console.log(
+              't3b: gisidawrapper props built',
+              ((window as any).perf.t3b - (window as any).perf.t3a) / 1000
+            );
             this.setState({
               gisidaWrapperProps,
               isBuildingGisidaProps: false,
@@ -1024,6 +1041,11 @@ class IrsPlan extends React.Component<
 
     // Build a list of OpenSRP API calls to make (fetch by parent_id to reduce number of calls)
     if (jurisdictionIdsToCall.length) {
+      (window as any).perf.t2a = window.performance.now();
+      console.log(
+        't2a: loading geojson, about to build make promises',
+        ((window as any).perf.t2a - (window as any).perf.t1) / 1000
+      );
       const promises = [];
       for (const jurisdiction of jurisdictionIdsToCall) {
         const endpoint = doLoadAllGeojson ? jurisdiction : OPENSRP_FIND_BY_PROPERTIES;
@@ -1039,9 +1061,18 @@ class IrsPlan extends React.Component<
           })
         );
       }
-
+      (window as any).perf.t2b = window.performance.now();
+      console.log(
+        't2b: loading geojson, about to call promises',
+        ((window as any).perf.t2b - (window as any).perf.t2a) / 1000
+      );
       // Make all calls to OpenSRP API
       Promise.all(promises).then((results: any[]) => {
+        (window as any).perf.t2c = window.performance.now();
+        console.log(
+          't2c: geojson loaded, about to organize',
+          ((window as any).perf.t2dc - (window as any).perf.t2b) / 1000
+        );
         const jurisdictions: Jurisdiction[] = [];
         // Loop through all parent_id results
         for (const Result of results) {
@@ -1061,6 +1092,11 @@ class IrsPlan extends React.Component<
             }
           }
         }
+        (window as any).perf.t2d = window.performance.now();
+        console.log(
+          't2d: loading geojson, about to build make promises',
+          ((window as any).perf.t2d - (window as any).perf.t2c) / 1000
+        );
         // Update the store with newly loaded jurisdictions with geojson
         this.props.fetchJurisdictionsActionCreator(jurisdictions);
       });
@@ -1071,7 +1107,17 @@ class IrsPlan extends React.Component<
           isLoadingGeoms: false,
         },
         () => {
+          (window as any).perf.t2 = window.performance.now();
+          console.log(
+            't2: not loading geojson, about to build gisidaWrapperProps',
+            ((window as any).perf.t2 - (window as any).perf.t1) / 1000
+          );
           const gisidaWrapperProps = this.getGisidaWrapperProps();
+          (window as any).perf.t3 = window.performance.now();
+          console.log(
+            't3: gisidaWrapperProps are built',
+            ((window as any).perf.t3 - (window as any).perf.t2) / 1000
+          );
           this.setState({
             gisidaWrapperProps,
             isBuildingGisidaProps: false,

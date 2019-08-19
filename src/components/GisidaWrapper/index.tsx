@@ -126,12 +126,17 @@ export const defaultGisidaProps: GisidaProps = {
   polygonFeatureCollection: null,
   structures: null,
 };
-
+(window as any).perf = (window as any).perf || {};
 /** Wrapper component for Gisida-powered maps */
 class GisidaWrapper extends React.Component<GisidaProps, GisidaState> {
   public static defaultProps = defaultGisidaProps;
   constructor(props: GisidaProps) {
     super(props);
+    (window as any).perf.t4 = window.performance.now();
+    console.log(
+      't4: GisidaWrapper constructor (aka - pre mount)',
+      ((window as any).perf.t4 - (window as any).perf.t3) / 1000
+    );
     const initialState = store.getState();
     this.state = {
       bounds: this.props.bounds || [],
@@ -509,6 +514,11 @@ class GisidaWrapper extends React.Component<GisidaProps, GisidaState> {
     } else {
       return false;
     }
+    (window as any).perf.t5 = window.performance.now();
+    console.log(
+      't5: GisidaWrapper.initMap, building Config',
+      ((window as any).perf.t5 - (window as any).perf.t4) / 1000
+    );
 
     // Build the site-config object for Gisida
     const config = ConfigStore(
@@ -552,7 +562,16 @@ class GisidaWrapper extends React.Component<GisidaProps, GisidaState> {
           const map = window.maps.find((e: mbMap) => (e as GisidaMap)._container.id === MAP_ID);
           if (map && map.isStyleLoaded) {
             loadLayers(MAP_ID, store.dispatch, visibleLayers);
+            (window as any).perf.t6 = window.performance.now();
+            console.log(
+              't6: Map style loaded, loadingLayers',
+              ((window as any).perf.t6 - (window as any).perf.t5) / 1000
+            );
             window.clearInterval(styleLoadInterval);
+            console.log(
+              'tt: total time "in our countrol"',
+              ((window as any).perf.t6 - (window as any).perf.t0) / 1000
+            );
           } else if (new Date().getTime() > styleLoadIntervalTimeout) {
             window.clearInterval(styleLoadInterval);
           }
