@@ -221,7 +221,7 @@ class IrsPlan extends React.Component<
       planById,
       supersetService,
     } = this.props;
-
+    (window as any).perf.t = window.performance.now();
     // GET LIST OF ALL JURISDICTIONS
     let allJurIds: string[] = [];
     if (!allJurisdictionIds.length || allJurisdictionIds.length === loadedJurisdictionIds.length) {
@@ -326,7 +326,7 @@ class IrsPlan extends React.Component<
               return_geometry: false,
             }).then(results => {
               (window as any).perf.t0 = window.performance.now();
-              console.log('t0: OPENSRP_FIND_BY_PROPERTIES level 0 geo loaded');
+              console.log('t0: OPENSRP_FIND_BY_PROPERTIES level 0 geo loaded', ((window as any).perf.t0 - (window as any).perf.t) / 1000);
               const result = results[0];
               if (result && result.properties) {
                 const country: JurisdictionsByCountry =

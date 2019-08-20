@@ -570,8 +570,12 @@ class GisidaWrapper extends React.Component<GisidaProps, GisidaState> {
             );
             window.clearInterval(styleLoadInterval);
             console.log(
-              'tt: total time "in our countrol"',
+              'tt: total time since receiving hierarchy',
               ((window as any).perf.t6 - (window as any).perf.t0) / 1000
+            );
+            console.log(
+              'TT: total time since mounting Jurisdiction Selection page',
+              ((window as any).perf.t6 - (window as any).perf.t) / 1000
             );
           } else if (new Date().getTime() > styleLoadIntervalTimeout) {
             window.clearInterval(styleLoadInterval);
