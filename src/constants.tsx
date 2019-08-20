@@ -206,8 +206,6 @@ export type IRS_CODE = typeof IRS_CODE;
 // plans
 export const ROUTINE_PLAN = 'Routine';
 export type ROUTINE_PLAN = typeof ROUTINE_PLAN;
-export const CASE_TRIGGERED_PLAN = 'Case-triggered';
-export type CASE_TRIGGERED_PLAN = typeof CASE_TRIGGERED_PLAN;
 export const FI_PLAN_TYPE = 'FI';
 export type FI_PLAN_TYPE = typeof FI_PLAN_TYPE;
 export const IRS_PLAN_TYPE = 'IRS';

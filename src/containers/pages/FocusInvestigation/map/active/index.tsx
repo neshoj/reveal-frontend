@@ -20,8 +20,8 @@ import {
   SUPERSET_STRUCTURES_SLICE,
   SUPERSET_TASKS_SLICE,
 } from '../../../../../configs/env';
+import { FIReasons } from '../../../../../configs/settings';
 import {
-  CASE_TRIGGERED_PLAN,
   END_DATE,
   FI_SINGLE_MAP_URL,
   FI_SINGLE_URL,
@@ -332,7 +332,7 @@ class SingleActiveFIMap extends React.Component<
             <div className="mapSidebar">
               <div>
                 <h5>
-                  {plan.plan_fi_reason === CASE_TRIGGERED_PLAN ? REACTIVE : ROUTINE_PLAN}&nbsp;
+                  {plan.plan_fi_reason === FIReasons[1] ? REACTIVE : ROUTINE_PLAN}&nbsp;
                   {INVESTIGATION}
                 </h5>
                 {detailViewPlanInvestigationContainer}

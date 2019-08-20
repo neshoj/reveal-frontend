@@ -14,12 +14,11 @@ import { TASK_YELLOW } from '../colors';
 import DrillDownTableLinkedCell from '../components/DrillDownTableLinkedCell';
 import NewRecordBadge from '../components/NewRecordBadge';
 import { DIGITAL_GLOBE_CONNECT_ID, ONADATA_OAUTH_STATE, OPENSRP_OAUTH_STATE } from '../configs/env';
-import { imgArr, locationHierarchy, LocationItem } from '../configs/settings';
+import { FIReasons, imgArr, locationHierarchy, LocationItem } from '../configs/settings';
 import {
   BEDNET_DISTRIBUTION_CODE,
   BLOOD_SCREENING_CODE,
   CASE_CONFIRMATION_CODE,
-  CASE_TRIGGERED_PLAN,
   FEATURE_COLLECTION,
   FI_SINGLE_MAP_URL,
   FI_SINGLE_URL,
@@ -238,7 +237,7 @@ export function extractPlan(plan: Plan) {
     ...plan,
     canton: null,
     caseClassification: null,
-    caseNotificationDate: plan.plan_fi_reason === CASE_TRIGGERED_PLAN ? plan.plan_date : null,
+    caseNotificationDate: plan.plan_fi_reason === FIReasons[1] ? plan.plan_date : null,
     district: null,
     focusArea: plan.jurisdiction_name,
     jurisdiction_id: plan.jurisdiction_id,
