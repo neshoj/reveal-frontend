@@ -270,6 +270,7 @@ class SingleFI extends React.Component<RouteComponentProps<RouteParams> & Single
             ...defaultTableProps,
             columns: allColumns,
             data: thePlans,
+            showPagination: thePlans.length > 20,
           };
           /** Push current tables and respective headers with data to be rendered */
           currentRoutineReactivePlans.push(
@@ -342,6 +343,7 @@ class SingleFI extends React.Component<RouteComponentProps<RouteParams> & Single
             ...defaultTableProps,
             columns: allColumns,
             data: thePlans,
+            showPagination: thePlans.length > 20,
           };
           /** Push complete tables and respective headers with data to be rendered */
           completeRoutineReactivePlans.push(
