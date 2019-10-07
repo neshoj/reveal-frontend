@@ -8,11 +8,12 @@ import { Helmet } from 'react-helmet';
 import { Route, Switch } from 'react-router';
 import { Col, Container, Row } from 'reactstrap';
 import Loading from '../components/page/Loading';
-import { WEBSITE_NAME } from '../configs/env';
 import { DISABLE_LOGIN_PROTECTION } from '../configs/env';
+import { WEBSITE_NAME } from '../configs/env';
 import { providers } from '../configs/settings';
 import {
   ACTIVE_IRS_PLAN_URL,
+  ASSIGN_PRACTITIONERS_URL,
   CREATE_ORGANIZATION_URL,
   DRAFT_IRS_PLAN_URL,
   EDIT_ORGANIZATION_URL,
@@ -56,6 +57,7 @@ library.add(faMap);
 library.add(faUser);
 library.add(faExternalLinkSquareAlt);
 
+import ConnectedAssignPractitioner from '../containers/pages/OrganizationViews/AssignPractitioners';
 import './App.css';
 
 /** Main App component */
@@ -226,6 +228,13 @@ class App extends Component {
                   exact={true}
                   path={`${EDIT_ORGANIZATION_URL}/:id`}
                   component={ConnectedCreateEditOrgView}
+                />
+                {/** Assign practitioners to organization view */}
+                <ConnectedPrivateRoute
+                  disableLoginProtection={DISABLE_LOGIN_PROTECTION}
+                  exact={true}
+                  path={`${ASSIGN_PRACTITIONERS_URL}/:id`}
+                  component={ConnectedAssignPractitioner}
                 />
                 {/* tslint:disable jsx-no-lambda */}
                 <Route
