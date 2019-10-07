@@ -180,6 +180,10 @@ export const ASSIGNMENT = 'Assignment';
 export type ASSIGNMENT = typeof ASSIGNMENT;
 export const YES = 'Yes';
 export type YES = typeof YES;
+export const ADD = 'Add';
+export type ADD = typeof ADD;
+export const PRACTITIONERS = 'Practitioners';
+export type PRACTITIONERS = typeof PRACTITIONERS;
 // TODO ? - do the below 2 belong here or in a settings file
 export const ORGANIZATION_LABEL = TEAM;
 export type ORGANIZATION_LABEL = typeof ORGANIZATION_LABEL;
@@ -276,6 +280,8 @@ export const OPENSRP_PARENT_ID = 'parent_id';
 export type OPENSRP_PARENT_ID = typeof OPENSRP_PARENT_ID;
 export const OPENSRP_ORGANIZATION_ENDPOINT = 'organization';
 export type OPENSRP_ORGANIZATION_ENDPOINT = typeof OPENSRP_ORGANIZATION_ENDPOINT;
+export const OPENSRP_ORG_PRACTITIONER_ENDPOINT = 'organization/practitioners';
+export type OPENSRP_ORG_PRACTITIONER_ENDPOINT = typeof OPENSRP_ORG_PRACTITIONER_ENDPOINT;
 
 // container pages title names
 export const HOME_TITLE = `Home page`;
