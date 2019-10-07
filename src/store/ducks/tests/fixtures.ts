@@ -1267,3 +1267,4 @@ export const practitioner6 = {
 
 export const practitioners = [practitioner1, practitioner2, practitioner3];
 export const org3Practitioners = [practitioner4, practitioner5, practitioner6];
+export const allPractitioners = [...practitioners, ...org3Practitioners];
