@@ -331,3 +331,8 @@ export const FI_PLAN_TYPE = 'FI';
 export type FI_PLAN_TYPE = typeof FI_PLAN_TYPE;
 export const IRS_PLAN_TYPE = 'IRS';
 export type IRS_PLAN_TYPE = typeof IRS_PLAN_TYPE;
+
+export const PRACTITIONER_CODE = {
+  text: 'Community Health Worker',
+};
+export type PRACTITIONER_CODE = typeof PRACTITIONER_CODE;
