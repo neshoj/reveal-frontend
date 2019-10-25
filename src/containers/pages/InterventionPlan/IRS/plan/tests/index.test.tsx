@@ -25,8 +25,8 @@ describe('containers/pages/IRS/plan', () => {
       match: {
         isExact: true,
         params: { id: '1234' },
-        path: `${INTERVENTION_IRS_URL}/plan/:id`,
-        url: `${INTERVENTION_IRS_URL}/plan/1234`,
+        path: `${INTERVENTION_IRS_URL}/draft/:id`,
+        url: `${INTERVENTION_IRS_URL}/draft/1234`,
       },
       planId: '1234',
     };
@@ -46,8 +46,8 @@ describe('containers/pages/IRS/plan', () => {
       match: {
         isExact: true,
         params: { id },
-        path: `${INTERVENTION_IRS_URL}/plan/:id`,
-        url: `${INTERVENTION_IRS_URL}/plan/${id}`,
+        path: `${INTERVENTION_IRS_URL}/draft/:id`,
+        url: `${INTERVENTION_IRS_URL}/draft/${id}`,
       },
     };
     const wrapper = mount(
