@@ -340,6 +340,8 @@ export const OPENSRP_ADD_PRACTITIONER_ROLE_ENDPOINT = 'practitionerRole/add';
 export type OPENSRP_ADD_PRACTITIONER_ROLE_ENDPOINT = typeof OPENSRP_ADD_PRACTITIONER_ROLE_ENDPOINT;
 export const OPENSRP_USERS_ENDPOINT = 'user';
 export type OPENSRP_USERS_ENDPOINT = typeof OPENSRP_USERS_ENDPOINT;
+export const OPENSRP_LOCATIONS_BY_PLAN = 'plans/findLocationNames';
+export type OPENSRP_LOCATIONS_BY_PLAN = typeof OPENSRP_LOCATIONS_BY_PLAN;
 
 // container pages title names
 export const HOME_TITLE = `Home page`;
