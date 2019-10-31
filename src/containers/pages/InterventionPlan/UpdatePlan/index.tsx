@@ -25,6 +25,7 @@ import planDefinitionReducer, {
 } from '../../../../store/ducks/opensrp/PlanDefinition';
 import PlanForm, { propsForUpdatingPlans } from '../../../forms/PlanForm';
 import { getPlanFormValues } from '../../../forms/PlanForm/helpers';
+import ConnectedPlanLocationNames from './PlanLocationNames';
 
 /** register the plan definitions reducer */
 reducerRegistry.register(planDefinitionReducerName, planDefinitionReducer);
@@ -95,6 +96,9 @@ const UpdatePlan = (props: RouteComponentProps<RouteParams> & UpdatePlanProps) =
   const planFormProps = {
     ...propsForUpdatingPlans,
     ...(plan && { initialValues: getPlanFormValues(plan) }),
+    renderLocationNames: (
+      child: (locationName: string, locationId: string, index: number) => JSX.Element
+    ) => <ConnectedPlanLocationNames child={child} plan={plan} />,
   };
 
   return (
