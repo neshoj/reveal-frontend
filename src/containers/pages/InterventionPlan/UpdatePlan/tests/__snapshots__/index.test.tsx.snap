@@ -264,5 +264,6 @@ Object {
   },
   "jurisdictionLabel": "Focus Area",
   "redirectAfterAction": "/plans/list",
+  "renderLocationNames": [Function],
 }
 `;

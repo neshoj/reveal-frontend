@@ -2,10 +2,12 @@ import { mount, shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
 import { createBrowserHistory } from 'history';
 import React from 'react';
+import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 import { UpdatePlan } from '..';
 import { PlanDefinition } from '../../../../../configs/settings';
 import { PLAN_UPDATE_URL } from '../../../../../constants';
+import store from '../../../../../store';
 import * as fixtures from '../../../../../store/ducks/opensrp/PlanDefinition/tests/fixtures';
 
 /* tslint:disable-next-line no-var-requires */
@@ -48,9 +50,11 @@ describe('components/InterventionPlan/UpdatePlan', () => {
   it('renders plan definition list correctly', () => {
     fetch.mockResponseOnce(JSON.stringify(fixtures.plans[1]));
     const wrapper = mount(
-      <Router history={history}>
-        <UpdatePlan {...getProps()} />
-      </Router>
+      <Provider store={store}>
+        <Router history={history}>
+          <UpdatePlan {...getProps()} />
+        </Router>
+      </Provider>
     );
     expect(toJson(wrapper.find('Breadcrumb'))).toMatchSnapshot('Breadcrumb');
     expect(toJson(wrapper.find('h3.page-title'))).toMatchSnapshot('Page title');
