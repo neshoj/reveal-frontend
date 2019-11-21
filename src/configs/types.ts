@@ -21,6 +21,7 @@ export type JurisdictionTypes = typeof JurisdictionLevels[number];
 export type ADMN0_PCODE =
   | 'TH'
   | 'ZM'
+  | 'ra Zambia'
   | 'NA'
   | 'BW'
   | 'Chadiza'
