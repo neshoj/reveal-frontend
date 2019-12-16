@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 import { Store } from 'redux';
 import HeaderBreadcrumb from '../../../../components/page/HeaderBreadcrumb/HeaderBreadcrumb';
@@ -22,6 +23,7 @@ import {
   START_DATE,
   TITLE,
 } from '../../../../constants';
+import { growl } from '../../../../helpers/utils';
 import { OpenSRPService } from '../../../../services/opensrp';
 import IRSPlansReducer, {
   reducerName as IRSPlansReducerName,
@@ -81,10 +83,10 @@ const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
           }
         })
         .catch(err => {
-          // console.log('ERR', err)
+          growl(err.message, { type: toast.TYPE.ERROR });
         });
     } catch (e) {
-      // do something with the error?
+      growl(e.message, { type: toast.TYPE.ERROR });
     }
   }
 
