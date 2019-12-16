@@ -96,17 +96,23 @@ const AssignPractitioner = (props: PropsTypes) => {
     assignedPractitioners,
   } = props;
   const [selectedOptions, setSelectedOptions] = useState<OptionsType<SelectOption>>([]);
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useConfirmOnBrowserUnload(selectedOptions.length > 0);
   useEffect(() => {
     const organizationId = props.match.params.id;
-    loadOrganization(organizationId, serviceClass, fetchOrganizationsCreator);
+    loadOrganization(organizationId, serviceClass, fetchOrganizationsCreator, signal);
     loadOrgPractitioners(
       organizationId,
       serviceClass,
       fetchPractitionerRolesCreator,
-      fetchPractitionersCreator
+      fetchPractitionersCreator,
+      signal
     );
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   if (!organization) {
@@ -183,7 +189,8 @@ const AssignPractitioner = (props: PropsTypes) => {
         organization.identifier,
         serviceClass,
         fetchPractitionerRolesCreator,
-        fetchPractitionersCreator
+        fetchPractitionersCreator,
+        signal
       );
 
       growl(
