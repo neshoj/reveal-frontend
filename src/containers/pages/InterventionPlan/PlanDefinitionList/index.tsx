@@ -43,9 +43,10 @@ interface PlanListProps {
 /** Simple component that loads the new plan form and allows you to create a new plan */
 const PlanDefinitionList = (props: PlanListProps) => {
   const { fetchPlans, plans, service } = props;
-  const [loading, setLoading] = useState<boolean>(true);
+  const controller = new AbortController();
+  const signal = controller.signal;
 
-  const apiService = new service(OPENSRP_PLANS);
+  const apiService = new service(OPENSRP_PLANS, signal);
 
   const pageTitle: string = PLANS;
 
@@ -65,21 +66,19 @@ const PlanDefinitionList = (props: PlanListProps) => {
   /** async function to load the data */
   async function loadData() {
     try {
-      setLoading(plans.length < 1); // only set loading when there are no plans
       const planObjects = await apiService.list();
       fetchPlans(planObjects);
     } catch (e) {
       // do something with the error?
-    } finally {
-      setLoading(false);
     }
   }
 
   useEffect(() => {
     loadData();
+    return () => controller.abort();
   }, []);
 
-  if (loading === true) {
+  if (plans.length < 1) {
     return <Loading />;
   }
 
