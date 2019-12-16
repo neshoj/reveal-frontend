@@ -7,6 +7,9 @@ import {
 import * as fixtures from '../../../../../store/ducks/tests/fixtures';
 import { loadOrganization, loadOrganizations, loadOrgPractitioners } from '../serviceHooks';
 
+const controller = new AbortController();
+const signal = controller.signal;
+
 describe('src/containers/pages/OrganizationViews/helpers/servicehooks', () => {
   it('loadOrganization works correctly', async () => {
     const mockRead = jest.fn(async () => fixtures.organization1);
@@ -17,11 +20,11 @@ describe('src/containers/pages/OrganizationViews/helpers/servicehooks', () => {
       };
     });
 
-    loadOrganization('organizationId', mockClass, mockActionCreator);
+    loadOrganization('organizationId', mockClass, mockActionCreator, signal);
     await flushPromises();
 
     // calls the correct endpoint
-    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORGANIZATION_ENDPOINT);
+    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORGANIZATION_ENDPOINT, signal);
 
     // Uses the correct service method
     expect(mockRead).toHaveBeenCalledWith('organizationId');
@@ -44,12 +47,13 @@ describe('src/containers/pages/OrganizationViews/helpers/servicehooks', () => {
       'organization3Id',
       mockClass,
       fetchPractitionerRolesMock,
-      fetchPractitionersMock
+      fetchPractitionersMock,
+      signal
     );
     await flushPromises();
 
     // calls the correct endpoint
-    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORG_PRACTITIONER_ENDPOINT);
+    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORG_PRACTITIONER_ENDPOINT, signal);
 
     // Uses the correct service method
     expect(mockRead).toHaveBeenCalledWith('organization3Id');
@@ -70,11 +74,11 @@ describe('src/containers/pages/OrganizationViews/helpers/servicehooks', () => {
       };
     });
 
-    loadOrganizations(mockClass, mockActionCreator);
+    loadOrganizations(mockClass, mockActionCreator, signal);
     await flushPromises();
 
     // calls the correct endpoint
-    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORGANIZATION_ENDPOINT);
+    expect(mockClass).toHaveBeenCalledWith(OPENSRP_ORGANIZATION_ENDPOINT, signal);
 
     // Uses the correct service method
     expect(mockList).toHaveBeenCalledTimes(1);
