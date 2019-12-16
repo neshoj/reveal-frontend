@@ -63,7 +63,8 @@ export type PropsTypes = Props & RouteComponentProps;
 
 const PractitionersListView = (props: PropsTypes) => {
   const { practitioners, serviceClass, fetchPractitionersCreator } = props;
-
+  const controller = new AbortController();
+  const signal = controller.signal;
   // functions/methods
 
   /** function to handle the submit on the inline search form */
@@ -118,7 +119,10 @@ const PractitionersListView = (props: PropsTypes) => {
 
   /** hook to load all practitioners and dispatch to them to store */
   useEffect(() => {
-    loadPractitioners(serviceClass, fetchPractitionersCreator);
+    loadPractitioners(serviceClass, fetchPractitionersCreator, signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   // break early if practitioners are absent
