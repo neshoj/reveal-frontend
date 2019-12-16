@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 import { Store } from 'redux';
 import HeaderBreadcrumb from '../../../../components/page/HeaderBreadcrumb/HeaderBreadcrumb';
@@ -17,6 +18,7 @@ import {
   PLANS,
   UPDATE_PLAN,
 } from '../../../../constants';
+import { growl } from '../../../../helpers/utils';
 import { OpenSRPService } from '../../../../services/opensrp';
 import planDefinitionReducer, {
   addPlanDefinition,
@@ -58,7 +60,7 @@ const UpdatePlan = (props: RouteComponentProps<RouteParams> & UpdatePlanProps) =
       const planFromAPI = await apiService.read(planIdentifier);
       fetchPlan(planFromAPI);
     } catch (e) {
-      // do something with the error?
+      growl(e.message, { type: toast.TYPE.ERROR });
     }
   }
 
