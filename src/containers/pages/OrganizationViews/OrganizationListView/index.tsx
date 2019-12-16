@@ -63,6 +63,8 @@ export type OrgsListViewPropsType = OrganizationsListViewProps & RouteComponentP
 
 const OrganizationListView = (props: OrgsListViewPropsType) => {
   const { organizations, serviceClass, fetchOrganizationsAction } = props;
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   // functions/methods
 
@@ -122,7 +124,10 @@ const OrganizationListView = (props: OrgsListViewPropsType) => {
   };
 
   useEffect(() => {
-    loadOrganizations(serviceClass, fetchOrganizationsAction);
+    loadOrganizations(serviceClass, fetchOrganizationsAction, signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   // break early if organizations are absent
