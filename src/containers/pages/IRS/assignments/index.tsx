@@ -16,6 +16,7 @@ import {
   HOME_URL,
   INTERVENTION,
   NO_PLANS_LOADED_MESSAGE,
+  OPENSRP_PLANS,
   PLAN_STATUS,
   REPORT_IRS_PLAN_URL,
   START_DATE,
@@ -38,18 +39,20 @@ import {
 /** register the plan definitions reducer */
 reducerRegistry.register(IRSPlansReducerName, IRSPlansReducer);
 
-const OpenSrpPlanService = new OpenSRPService('plans');
-
 /** interface for PlanAssignmentsListProps props */
 interface PlanAssignmentsListProps {
   fetchPlans: typeof fetchPlanRecords;
   plans: PlanRecord[];
+  service: typeof OpenSRPService;
 }
 
-/** Simple component that loads plans and allows you to manage plan-jurisdiciton-organization assignments */
+/** Simple component that loads plans and allows you to manage plan-jurisdiction-organization assignments */
 const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
-  const { fetchPlans, plans } = props;
-  const [loading, setLoading] = useState<boolean>(plans.length < 1);
+  const { fetchPlans, plans, service } = props;
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const OpenSrpPlanService = new service(OPENSRP_PLANS, signal);
 
   const pageTitle: string = `${ASSIGN_PLANS}`;
 
@@ -69,7 +72,6 @@ const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
   /** async function to load the data */
   async function loadData() {
     try {
-      setLoading(plans.length < 1); // only set loading when there are no plans
       await OpenSrpPlanService.list()
         .then(planResults => {
           if (planResults) {
@@ -81,7 +83,6 @@ const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
         .catch(err => {
           // console.log('ERR', err)
         });
-      setLoading(false);
     } catch (e) {
       // do something with the error?
     }
@@ -89,9 +90,10 @@ const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
 
   useEffect(() => {
     loadData();
+    return () => controller.abort();
   }, []);
 
-  if (loading) {
+  if (plans.length < 1) {
     return <Loading />;
   }
 
@@ -139,6 +141,7 @@ const IRSAssignmentPlansList = (props: PlanAssignmentsListProps) => {
 const defaultProps: PlanAssignmentsListProps = {
   fetchPlans: fetchPlanRecords,
   plans: [],
+  service: OpenSRPService,
 };
 
 IRSAssignmentPlansList.defaultProps = defaultProps;
