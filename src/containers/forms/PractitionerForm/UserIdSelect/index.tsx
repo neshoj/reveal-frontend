@@ -5,8 +5,10 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { ValueType } from 'react-select/src/types';
+import { toast } from 'react-toastify';
 import { OPENMRS_USERS_REQUEST_PAGE_SIZE } from '../../../../configs/env';
 import { OPENSRP_PRACTITIONER_ENDPOINT, OPENSRP_USERS_ENDPOINT } from '../../../../constants';
+import { growl } from '../../../../helpers/utils';
 import { OpenSRPService } from '../../../../services/opensrp';
 import { Practitioner } from '../../../../store/ducks/opensrp/practitioners';
 
@@ -41,6 +43,8 @@ export const UserIdSelect: React.FC<Props> = props => {
   const { onChangeHandler } = props;
   const [openMRSUsers, setOpenMRSUsers] = useState<OpenMRSUser[]>([]);
   const [selectIsLoading, setSelectIsLoading] = useState<boolean>(true);
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   /** calls the prop.onChange with the selected option as argument
    * @param {ValueType<Option>} option - the value in the react-select
@@ -51,18 +55,24 @@ export const UserIdSelect: React.FC<Props> = props => {
     }
   };
 
-  /** Pulls all openMRS users data */
-  const loadOpenMRSUsers = async (service: typeof OpenSRPService = OpenSRPService) => {
+  /** Pulls all openMRS users data
+   * @param {typeof OpenSRPService} service - the opensrp service
+   * @param {AbortSignal} abortSignal - communicates with/abort a fetch request.
+   */
+  const loadOpenMRSUsers = async (
+    service: typeof OpenSRPService = OpenSRPService,
+    abortSignal: AbortSignal
+  ) => {
     let filterParams = {
       page_size: OPENMRS_USERS_REQUEST_PAGE_SIZE,
       start_index: 0,
     };
-    const serve = new service(OPENSRP_USERS_ENDPOINT);
+    const serve = new service(OPENSRP_USERS_ENDPOINT, abortSignal);
     const allOpenMRSUsers = [];
     let response: OpenMRSResponse;
     do {
       response = await serve.list(filterParams).catch(err => {
-        /** growl */
+        growl(err.message, { type: toast.TYPE.ERROR });
       });
       allOpenMRSUsers.push(...response.results);
 
@@ -78,22 +88,25 @@ export const UserIdSelect: React.FC<Props> = props => {
 
   useEffect(() => {
     try {
-      loadUnmatchedUsers();
+      loadUnmatchedUsers(signal);
     } catch (err) {
       /** expected error is setState on unmounted component
        */
     }
+    return () => controller.abort();
   }, []);
 
   /** filters out openMRs User objects that have already been mapped to an existing
    * practitioner, this is an effort towards ensuring a 1-1 mapping between an openMRS user
    * and a practitioner entity
    */
-  const loadUnmatchedUsers = async () => {
+  const loadUnmatchedUsers = async (abortSignal: AbortSignal) => {
     const practitioners: Practitioner[] = await new props.serviceClass(
       OPENSRP_PRACTITIONER_ENDPOINT
-    ).list();
-    const allOpenMRSUsers = await loadOpenMRSUsers();
+    )
+      .list()
+      .catch((err: Error) => growl(err.message, { type: toast.TYPE.ERROR }));
+    const allOpenMRSUsers = await loadOpenMRSUsers(props.serviceClass, abortSignal);
 
     const practitionerUserIds = practitioners.map(practitioner => practitioner.userId);
     const unMatchedUsers = allOpenMRSUsers.filter(user => !practitionerUserIds.includes(user.uuid));
