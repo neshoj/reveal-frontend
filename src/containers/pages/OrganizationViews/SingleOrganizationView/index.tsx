@@ -92,22 +92,26 @@ const SingleOrganizationView = (props: SingleOrgViewPropsType) => {
     fetchPractitionerRolesAction,
     fetchPractitionersAction,
   } = props;
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   const orgId = props.match.params.id ? props.match.params.id : '';
 
   // functions / methods //
 
-  /** Unassign Practitioner from organization
+  /** Un-assign Practitioner from organization
    * @param {practitionerId} practitioner - the practitioner
    * @param {organizationId} org - the organization
    * @param {serviceClass} service - the openSRP service
+   * @param {AbortSignal} abortSignal - used to communicate with/abort a DOM request.
    */
   const unassignPractitioner = async (
     practitioner: Practitioner,
     org: Organization,
-    service: typeof serviceClass = OpenSRPService
+    service: typeof serviceClass = OpenSRPService,
+    abortSignal: AbortSignal
   ) => {
-    const serve = new service(OPENSRP_DEL_PRACTITIONER_ROLE_ENDPOINT);
+    const serve = new service(OPENSRP_DEL_PRACTITIONER_ROLE_ENDPOINT, abortSignal);
     const params = { organization: org.identifier, practitioner: practitioner.identifier };
     serve
       .delete(params)
@@ -120,19 +124,21 @@ const SingleOrganizationView = (props: SingleOrgViewPropsType) => {
           orgId,
           serviceClass,
           fetchPractitionerRolesAction,
-          fetchPractitionersAction
+          fetchPractitionersAction,
+          abortSignal
         );
       })
       .catch((err: Error) => growl(REMOVING_PRACTITIONER_FAILED, { type: toast.TYPE.ERROR }));
   };
 
   useEffect(() => {
-    loadOrganization(orgId, serviceClass, fetchOrganizationsAction);
+    loadOrganization(orgId, serviceClass, fetchOrganizationsAction, signal);
     loadOrgPractitioners(
       orgId,
       serviceClass,
       fetchPractitionerRolesAction,
-      fetchPractitionersAction
+      fetchPractitionersAction,
+      signal
     );
   }, []);
 
@@ -172,7 +178,7 @@ const SingleOrganizationView = (props: SingleOrgViewPropsType) => {
           // tslint:disable-next-line: jsx-no-lambda
           onClick={e => {
             e.preventDefault();
-            unassignPractitioner(practitioner, organization, serviceClass);
+            unassignPractitioner(practitioner, organization, serviceClass, signal);
           }}
         >
           {REMOVE}
