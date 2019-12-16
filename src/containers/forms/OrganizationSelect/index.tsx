@@ -3,8 +3,10 @@ import { keyBy, values } from 'lodash';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import Select from 'react-select';
+import { toast } from 'react-toastify';
 import { Store } from 'redux';
 import { OPENSRP_ORGANIZATION_ENDPOINT, SELECT } from '../../../constants';
+import { growl } from '../../../helpers/utils';
 import { OpenSRPService } from '../../../services/opensrp';
 import store from '../../../store';
 import assignmentReducer, {
@@ -59,7 +61,7 @@ const defaultProps: OrganizationSelectProps = {
 };
 
 /**
- * OrganizationSelect - a flat select for Organizations
+ * OrganizationSelect - a select for Organizations
  * Allows you to Select Organizations to be assigned to the plan-jurisdiction
  * On selection update the `handleChange` method updates the Assignments store
  */
@@ -77,18 +79,26 @@ const OrganizationSelect = (props: OrganizationSelectProps) => {
     value: selectOptions,
   } = props;
 
-  const loadOrganizations = async (service: typeof serviceClass) => {
-    const serve = new service(OPENSRP_ORGANIZATION_ENDPOINT);
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  /** load all organizations
+   * @param {typeof OpenSRPService} service - the openSRP service
+   * @param {AbortSignal} abortSignal - communicate with/abort fetch request
+   */
+  const loadOrganizations = async (service: typeof serviceClass, abortSignal: AbortSignal) => {
+    const serve = new service(OPENSRP_ORGANIZATION_ENDPOINT, abortSignal);
     serve
       .list()
       .then((response: Organization[]) => store.dispatch(fetchOrganizationsAction(response)))
       .catch((err: Error) => {
-        /** TODO - find something to do with error */
+        growl(err.message, { type: toast.TYPE.ERROR });
       });
   };
 
   useEffect(() => {
-    loadOrganizations(serviceClass);
+    loadOrganizations(serviceClass, signal);
+    return () => controller.abort();
   }, []);
 
   /** Get select options from OpenSRP as a promise */
