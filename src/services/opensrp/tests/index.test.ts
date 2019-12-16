@@ -8,6 +8,8 @@ import { OpenSRPAPIResponse } from './fixtures/session';
 const fetch = require('jest-fetch-mock');
 
 jest.mock('../../../configs/env');
+const controller = new AbortController();
+const signal = controller.signal;
 
 describe('services/OpenSRP', () => {
   beforeEach(() => {
@@ -26,7 +28,7 @@ describe('services/OpenSRP', () => {
   });
 
   it('OpenSRPService constructor works', async () => {
-    const planService = new OpenSRPService('plans');
+    const planService = new OpenSRPService('plans', signal);
     expect(planService.baseURL).toEqual('https://test.smartregister.org/opensrp/rest/');
     expect(planService.endpoint).toEqual('plans');
     expect(planService.generalURL).toEqual('https://test.smartregister.org/opensrp/rest/plans');
@@ -50,7 +52,7 @@ describe('services/OpenSRP', () => {
 
   it('OpenSRPService list method works', async () => {
     fetch.mockResponseOnce(JSON.stringify(plansListResponse));
-    const planService = new OpenSRPService('plans');
+    const planService = new OpenSRPService('plans', signal);
     const result = await planService.list();
     expect(result).toEqual(plansListResponse);
     expect(fetch.mock.calls).toEqual([
@@ -63,6 +65,7 @@ describe('services/OpenSRP', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'GET',
+          signal,
         },
       ],
     ]);
@@ -70,7 +73,7 @@ describe('services/OpenSRP', () => {
 
   it('OpenSRPService list method params work', async () => {
     fetch.mockResponseOnce(JSON.stringify({}));
-    const service = new OpenSRPService('location');
+    const service = new OpenSRPService('location', signal);
     await service.list({ is_jurisdiction: true });
     expect(fetch.mock.calls[0][0]).toEqual(
       'https://test.smartregister.org/opensrp/rest/location?is_jurisdiction=true'
@@ -79,7 +82,7 @@ describe('services/OpenSRP', () => {
 
   it('OpenSRPService list method should handle http errors', async () => {
     fetch.mockResponseOnce(JSON.stringify({}), { status: 500 });
-    const planService = new OpenSRPService('plans');
+    const planService = new OpenSRPService('plans', signal);
     let error;
     try {
       await planService.list();
@@ -106,6 +109,7 @@ describe('services/OpenSRP', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'DELETE',
+          signal,
         },
       ],
     ]);
@@ -142,6 +146,7 @@ describe('services/OpenSRP', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'GET',
+          signal,
         },
       ],
     ]);
@@ -193,6 +198,7 @@ describe('services/OpenSRP', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'POST',
+          signal,
         },
       ],
     ]);
@@ -241,6 +247,7 @@ describe('services/OpenSRP', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'PUT',
+          signal,
         },
       ],
     ]);

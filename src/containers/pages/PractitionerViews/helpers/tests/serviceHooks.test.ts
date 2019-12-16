@@ -4,6 +4,9 @@ import { practitioner1 } from '../../../../../store/ducks/tests/fixtures';
 import { practitioners } from '../../../../forms/PractitionerForm/UserIdSelect/tests/fixtures';
 import { loadPractitioner, loadPractitioners } from '../serviceHooks';
 
+const controller = new AbortController();
+const signal = controller.signal;
+
 describe('src/containers/pages/PractitionerViews/serviceHooks', () => {
   it('loadPractitioner works correctly', async () => {
     const mockRead = jest.fn(async () => practitioner1);
@@ -14,11 +17,11 @@ describe('src/containers/pages/PractitionerViews/serviceHooks', () => {
       };
     });
 
-    loadPractitioner('practitionerId', mockClass, mockActionCreator);
+    loadPractitioner('practitionerId', mockClass, mockActionCreator, signal);
     await flushPromises();
 
     // calls the correct endpoint
-    expect(mockClass).toHaveBeenCalledWith(OPENSRP_PRACTITIONER_ENDPOINT);
+    expect(mockClass).toHaveBeenCalledWith(OPENSRP_PRACTITIONER_ENDPOINT, signal);
 
     // Uses the correct service method
     expect(mockRead).toHaveBeenCalledWith('practitionerId');
@@ -36,11 +39,11 @@ describe('src/containers/pages/PractitionerViews/serviceHooks', () => {
       };
     });
 
-    loadPractitioners(mockClass, mockActionCreator);
+    loadPractitioners(mockClass, mockActionCreator, signal);
     await flushPromises();
 
     // calls the correct endpoint
-    expect(mockClass).toHaveBeenCalledWith(OPENSRP_PRACTITIONER_ENDPOINT);
+    expect(mockClass).toHaveBeenCalledWith(OPENSRP_PRACTITIONER_ENDPOINT, signal);
 
     // Uses the correct service method
     expect(mockList).toHaveBeenCalledTimes(1);

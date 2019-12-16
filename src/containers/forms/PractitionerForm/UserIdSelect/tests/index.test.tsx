@@ -9,6 +9,8 @@ import { openMRSUsers, practitioners, sortedUsers } from './fixtures';
 // tslint:disable-next-line: no-var-requires
 const fetch = require('jest-fetch-mock');
 jest.mock('../../../../../configs/env');
+const controller = new AbortController();
+const signal = controller.signal;
 
 describe('src/*/forms/userIdSelect', () => {
   beforeEach(() => {
@@ -57,6 +59,7 @@ describe('src/*/forms/userIdSelect', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'GET',
+          signal,
         },
       ],
       [
@@ -68,6 +71,7 @@ describe('src/*/forms/userIdSelect', () => {
             'content-type': 'application/json;charset=UTF-8',
           },
           method: 'GET',
+          signal,
         },
       ],
     ];

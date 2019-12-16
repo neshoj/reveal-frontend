@@ -13,6 +13,9 @@ import * as fixtures from './fixtures';
 /* tslint:disable-next-line no-var-requires */
 const fetch = require('jest-fetch-mock');
 
+const controller = new AbortController();
+const signal = controller.signal;
+
 jest.mock('../../../../configs/env');
 
 describe('containers/forms/PlanForm', () => {
@@ -760,6 +763,7 @@ describe('containers/forms/PlanForm - Submission', () => {
           'content-type': 'application/json;charset=UTF-8',
         },
         method: 'POST',
+        signal,
       },
     ]);
   });
@@ -799,6 +803,7 @@ describe('containers/forms/PlanForm - Submission', () => {
           'content-type': 'application/json;charset=UTF-8',
         },
         method: 'PUT',
+        signal,
       },
     ]);
   });
