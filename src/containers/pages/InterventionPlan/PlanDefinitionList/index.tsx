@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 import { Store } from 'redux';
 import LinkAsButton from '../../../../components/LinkAsButton';
@@ -23,6 +24,7 @@ import {
   STATUS_HEADER,
   TITLE,
 } from '../../../../constants';
+import { growl } from '../../../../helpers/utils';
 import { OpenSRPService } from '../../../../services/opensrp';
 import planDefinitionReducer, {
   fetchPlanDefinitions,
@@ -69,7 +71,7 @@ const PlanDefinitionList = (props: PlanListProps) => {
       const planObjects = await apiService.list();
       fetchPlans(planObjects);
     } catch (e) {
-      // do something with the error?
+      growl(e.message, { type: toast.TYPE.ERROR });
     }
   }
 
